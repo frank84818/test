@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 typedef struct Node {
     struct Node *next;
@@ -17,11 +18,37 @@ Node_t *partitionList(Node_t *, int);
 
 Node_t *partitionList(Node_t *list, int value) {
 
-    Node_t *head = NULL;
+    Node_t *L2 = NULL; // new head
 
-    Node_t **indir = &list;
+    Node_t **ptr1 = &list, **ptr2 = &L2;
 
-    while 
+    // for (Node_t *node = list; node; node=node->next) {
+    //     // printf("1");
+    //     if (node -> value < value) {
+    //         *ptr1 = node;
+    //         ptr1 = &((*ptr1)->next);
+
+    //     }
+    //     else {
+    //         *ptr2 = node; // *ptr2 == L2; => L2 = node
+    //         ptr2 = &((*ptr2)->next);
+    //     }
+    // }
+
+    for (Node_t *node = list; node; node=node->next) {
+        
+        Node_t ***indir = node->value < value ? &ptr1: &ptr2;
+        **indir = node;
+        *indir = &((**indir)->next);
+        
+    }
+    
+    // Concatenate 2 lists and mamdatorily assign NULL to the end of the concatenated list.
+    *ptr1 = L2;
+    *ptr2 = NULL;
+
+    return list;
+
 
 }
 
@@ -89,14 +116,21 @@ void append(Node_t **head, int value) {
 void traverse(Node_t **head) {
 
     printf("List start\n");
+    printf("Head");
 
-    Node_t **indirect = head;
+    // Node_t **indirect = head;
+    // int index = 0;
+    // while ((*indirect)) {
+    //     printf("Node #%d's value is %d.\n", index++, (*indirect)->value);
+    //     indirect = &(*indirect) -> next;
+
+    // }
     int index = 0;
-    while ((*indirect)) {
-        printf("Node #%d's value is %d.\n", index++, (*indirect)->value);
-        indirect = &(*indirect) -> next;
-
+    for (Node_t *node = *head; node; node = node->next){
+        // printf("Node #%d's value is %d.\n", index++, node->value);
+        printf("->%d", node -> value);
     }
+    printf("\n");
 }
 
 void remove_node(Node_t **head, Node_t *target) {
@@ -169,6 +203,16 @@ int main() {
     deleteMiddle(&merged);
 
     traverse(&merged);
+
+    Node_t *random;
+    srand(time(NULL));
+    for (int i = 0; i < 10; i++) {
+        append(&random, rand() % 10);
+    }
+    traverse(&random);
+    Node_t *partitioned = partitionList(random, 4);
+
+    traverse(&partitioned);
 
     return 0;
 
